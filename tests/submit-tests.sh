@@ -82,8 +82,24 @@ submit_test() {
   mkdir -p "${out_dir}"
 
   printf "Submitting: %s\n" "${test_name}"
+
+  # Build command: insert -o before -- if present, else append
+  local cmd=()
+  local inserted=false
+  for arg in "$@"; do
+    if [[ "${arg}" == "--" && "${inserted}" == "false" ]]; then
+      cmd+=("-o" "${out_dir}" "--")
+      inserted=true
+    else
+      cmd+=("${arg}")
+    fi
+  done
+  if [[ "${inserted}" == "false" ]]; then
+    cmd+=("-o" "${out_dir}")
+  fi
+
   local sbatch_output
-  if sbatch_output=$("$@" -o "${out_dir}" 2>&1); then
+  if sbatch_output=$("${cmd[@]}" 2>&1); then
     local job_id
     job_id=$(printf "%s" "${sbatch_output}" | grep -oP '\d+' | head -1)
     if [[ -n "${job_id}" ]]; then
@@ -144,8 +160,6 @@ cleanup_variant_config() {
 
 # orca tests
 if should_test "orca" && command -v sorca >/dev/null 2>&1; then
-  printf "\n== orca ==\n"
-
   wd=$(setup_work_dir "orca-success" "${INPUT_DIR}/orca/hf-h2.inp")
   submit_test "orca-success" "success" sorca "${wd}/hf-h2.inp"
 
@@ -161,14 +175,12 @@ if should_test "orca" && command -v sorca >/dev/null 2>&1; then
   submit_test "orca-variant" "software-error" sorca "${wd}/hf-h2.inp" --variant test
   cleanup_variant_config
 else
-  printf "\nSKIP: orca (not available)\n"
+  printf "SKIP: orca\n"
   SKIP_COUNT=$((SKIP_COUNT + 1))
 fi
 
 # gaussian tests
 if should_test "gaussian" && command -v sgaussian >/dev/null 2>&1; then
-  printf "\n== gaussian ==\n"
-
   wd=$(setup_work_dir "gaussian-success" "${INPUT_DIR}/gaussian/hf-h2.com")
   submit_test "gaussian-success" "success" sgaussian "${wd}/hf-h2.com"
 
@@ -181,14 +193,12 @@ if should_test "gaussian" && command -v sgaussian >/dev/null 2>&1; then
   wd=$(setup_work_dir "gaussian-timeout" "${INPUT_DIR}/gaussian/hf-h2.com")
   submit_test "gaussian-timeout" "timeout" sgaussian "${wd}/hf-h2.com" -t "${TIMEOUT_LIMIT}"
 else
-  printf "\nSKIP: gaussian (not available)\n"
+  printf "SKIP: gaussian\n"
   SKIP_COUNT=$((SKIP_COUNT + 1))
 fi
 
 # dalton tests
 if should_test "dalton" && command -v sdalton >/dev/null 2>&1; then
-  printf "\n== dalton ==\n"
-
   wd=$(setup_work_dir "dalton-pair" \
     "${INPUT_DIR}/dalton/hf.dal" "${INPUT_DIR}/dalton/sto-3g-h2.mol")
   submit_test "dalton-pair" "success" sdalton "${wd}/hf.dal" "${wd}/sto-3g-h2.mol"
@@ -208,14 +218,12 @@ if should_test "dalton" && command -v sdalton >/dev/null 2>&1; then
     "${INPUT_DIR}/dalton/hf.dal" "${INPUT_DIR}/dalton/sto-3g-h2.mol")
   submit_test "dalton-timeout" "timeout" sdalton "${wd}/hf.dal" "${wd}/sto-3g-h2.mol" -t "${TIMEOUT_LIMIT}"
 else
-  printf "\nSKIP: dalton (not available)\n"
+  printf "SKIP: dalton\n"
   SKIP_COUNT=$((SKIP_COUNT + 1))
 fi
 
 # dirac tests
 if should_test "dirac" && command -v sdirac >/dev/null 2>&1; then
-  printf "\n== dirac ==\n"
-
   wd=$(setup_work_dir "dirac-success" \
     "${INPUT_DIR}/dirac/hf-h2.inp" "${INPUT_DIR}/dirac/h2.mol")
   submit_test "dirac-success" "success" sdirac "${wd}/hf-h2.inp" "${wd}/h2.mol"
@@ -228,14 +236,12 @@ if should_test "dirac" && command -v sdirac >/dev/null 2>&1; then
     "${INPUT_DIR}/dirac/hf-h2.inp" "${INPUT_DIR}/dirac/h2.mol")
   submit_test "dirac-timeout" "timeout" sdirac "${wd}/hf-h2.inp" "${wd}/h2.mol" -t "${TIMEOUT_LIMIT}"
 else
-  printf "\nSKIP: dirac (not available)\n"
+  printf "SKIP: dirac\n"
   SKIP_COUNT=$((SKIP_COUNT + 1))
 fi
 
 # cfour tests
 if should_test "cfour" && command -v scfour >/dev/null 2>&1; then
-  printf "\n== cfour ==\n"
-
   wd=$(setup_work_dir "cfour-success" "${INPUT_DIR}/cfour/hf-h2.inp")
   submit_test "cfour-success" "success" scfour "${wd}/hf-h2.inp"
 
@@ -245,14 +251,12 @@ if should_test "cfour" && command -v scfour >/dev/null 2>&1; then
   wd=$(setup_work_dir "cfour-timeout" "${INPUT_DIR}/cfour/hf-h2.inp")
   submit_test "cfour-timeout" "timeout" scfour "${wd}/hf-h2.inp" -t "${TIMEOUT_LIMIT}"
 else
-  printf "\nSKIP: cfour (not available)\n"
+  printf "SKIP: cfour\n"
   SKIP_COUNT=$((SKIP_COUNT + 1))
 fi
 
 # molpro tests
 if should_test "molpro" && command -v smolpro >/dev/null 2>&1; then
-  printf "\n== molpro ==\n"
-
   wd=$(setup_work_dir "molpro-success" "${INPUT_DIR}/molpro/hf-h2.inp")
   submit_test "molpro-success" "success" smolpro "${wd}/hf-h2.inp"
 
@@ -262,14 +266,12 @@ if should_test "molpro" && command -v smolpro >/dev/null 2>&1; then
   wd=$(setup_work_dir "molpro-timeout" "${INPUT_DIR}/molpro/hf-h2.inp")
   submit_test "molpro-timeout" "timeout" smolpro "${wd}/hf-h2.inp" -t "${TIMEOUT_LIMIT}"
 else
-  printf "\nSKIP: molpro (not available)\n"
+  printf "SKIP: molpro\n"
   SKIP_COUNT=$((SKIP_COUNT + 1))
 fi
 
 # nwchem tests
 if should_test "nwchem" && command -v snwchem >/dev/null 2>&1; then
-  printf "\n== nwchem ==\n"
-
   wd=$(setup_work_dir "nwchem-success" "${INPUT_DIR}/nwchem/hf-h2.nw")
   submit_test "nwchem-success" "success" snwchem "${wd}/hf-h2.nw"
 
@@ -279,14 +281,12 @@ if should_test "nwchem" && command -v snwchem >/dev/null 2>&1; then
   wd=$(setup_work_dir "nwchem-timeout" "${INPUT_DIR}/nwchem/hf-h2.nw")
   submit_test "nwchem-timeout" "timeout" snwchem "${wd}/hf-h2.nw" -t "${TIMEOUT_LIMIT}"
 else
-  printf "\nSKIP: nwchem (not available)\n"
+  printf "SKIP: nwchem\n"
   SKIP_COUNT=$((SKIP_COUNT + 1))
 fi
 
 # xtb tests
 if should_test "xtb" && command -v sxtb >/dev/null 2>&1; then
-  printf "\n== xtb ==\n"
-
   wd=$(setup_work_dir "xtb-success" "${INPUT_DIR}/xtb/h2.xyz")
   submit_test "xtb-success" "success" sxtb "${wd}/h2.xyz"
 
@@ -296,14 +296,12 @@ if should_test "xtb" && command -v sxtb >/dev/null 2>&1; then
   wd=$(setup_work_dir "xtb-timeout" "${INPUT_DIR}/xtb/h2.xyz")
   submit_test "xtb-timeout" "timeout" sxtb "${wd}/h2.xyz" -t "${TIMEOUT_LIMIT}"
 else
-  printf "\nSKIP: xtb (not available)\n"
+  printf "SKIP: xtb\n"
   SKIP_COUNT=$((SKIP_COUNT + 1))
 fi
 
 # std2 tests
 if should_test "std2" && command -v sstd2 >/dev/null 2>&1; then
-  printf "\n== std2 ==\n"
-
   wd=$(setup_work_dir "std2-molden" "${INPUT_DIR}/std2/h2.molden")
   submit_test "std2-molden" "success" sstd2 "${wd}/h2.molden"
 
@@ -316,14 +314,12 @@ if should_test "std2" && command -v sstd2 >/dev/null 2>&1; then
   wd=$(setup_work_dir "std2-timeout" "${INPUT_DIR}/std2/h2.molden")
   submit_test "std2-timeout" "timeout" sstd2 "${wd}/h2.molden" -t "${TIMEOUT_LIMIT}"
 else
-  printf "\nSKIP: std2 (not available)\n"
+  printf "SKIP: std2\n"
   SKIP_COUNT=$((SKIP_COUNT + 1))
 fi
 
 # turbomole tests
 if should_test "turbomole" && command -v sturbomole >/dev/null 2>&1; then
-  printf "\n== turbomole ==\n"
-
   submit_test "turbomole-success" "success" \
     sturbomole "${INPUT_DIR}/turbomole/hf-h2/control" "${INPUT_DIR}/turbomole/hf-h2/coord"
 
@@ -333,28 +329,24 @@ if should_test "turbomole" && command -v sturbomole >/dev/null 2>&1; then
   submit_test "turbomole-timeout" "timeout" \
     sturbomole "${INPUT_DIR}/turbomole/hf-h2/control" "${INPUT_DIR}/turbomole/hf-h2/coord" -t "${TIMEOUT_LIMIT}"
 else
-  printf "\nSKIP: turbomole (not available)\n"
+  printf "SKIP: turbomole\n"
   SKIP_COUNT=$((SKIP_COUNT + 1))
 fi
 
 # sharc tests
 if should_test "sharc" && command -v ssharc >/dev/null 2>&1; then
-  printf "\n== sharc ==\n"
-
   wd=$(setup_work_dir "sharc-success" "${INPUT_DIR}/sharc/hf-h2.inp")
   submit_test "sharc-success" "success" ssharc "${wd}/hf-h2.inp"
 
   wd=$(setup_work_dir "sharc-timeout" "${INPUT_DIR}/sharc/hf-h2.inp")
   submit_test "sharc-timeout" "timeout" ssharc "${wd}/hf-h2.inp" -t "${TIMEOUT_LIMIT}"
 else
-  printf "\nSKIP: sharc (not available)\n"
+  printf "SKIP: sharc\n"
   SKIP_COUNT=$((SKIP_COUNT + 1))
 fi
 
 # python tests
 if should_test "python" && command -v spython >/dev/null 2>&1; then
-  printf "\n== python ==\n"
-
   wd=$(setup_work_dir "python-success" "${INPUT_DIR}/python/hello.py")
   submit_test "python-success" "success" spython "${wd}/hello.py"
 
@@ -364,14 +356,12 @@ if should_test "python" && command -v spython >/dev/null 2>&1; then
   wd=$(setup_work_dir "python-timeout" "${INPUT_DIR}/python/hello.py")
   submit_test "python-timeout" "timeout" spython "${wd}/hello.py" -t "${TIMEOUT_LIMIT}"
 else
-  printf "\nSKIP: python (not available)\n"
+  printf "SKIP: python\n"
   SKIP_COUNT=$((SKIP_COUNT + 1))
 fi
 
 # exec tests
 if should_test "exec" && command -v sexec >/dev/null 2>&1; then
-  printf "\n== exec ==\n"
-
   wd=$(setup_work_dir "exec-success" "${INPUT_DIR}/exec/ok.sh")
   chmod +x "${wd}/ok.sh"
   submit_test "exec-success" "success" sexec -- "${wd}/ok.sh"
@@ -384,7 +374,7 @@ if should_test "exec" && command -v sexec >/dev/null 2>&1; then
   chmod +x "${wd}/ok.sh"
   submit_test "exec-timeout" "timeout" sexec -t "${TIMEOUT_LIMIT}" -- "${wd}/ok.sh"
 else
-  printf "\nSKIP: exec (not available)\n"
+  printf "SKIP: exec\n"
   SKIP_COUNT=$((SKIP_COUNT + 1))
 fi
 
