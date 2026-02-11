@@ -141,10 +141,10 @@ setup_work_dir() {
 #   0 on success
 setup_variant_config() {
   if [[ "${MODE}" == "python" ]]; then
-    printf '[paths]\norca_path = "/tmp/orca-test-variant"\n' \
+    printf '[paths]\norca_path = "/software/kemi/Orca/orca_6_0_1"\n' \
       > "${PROJECT_ROOT}/python-submit/config/software/orca-test.toml"
   else
-    printf 'ORCA_PATH="/tmp/orca-test-variant"\n' \
+    printf 'ORCA_PATH="/software/kemi/Orca/orca_6_0_1"\n' \
       > "${PROJECT_ROOT}/bash-submit/config/software/orca-test.sh"
   fi
 }

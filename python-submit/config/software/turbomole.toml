@@ -1,2 +1,7 @@
+[paths]
+turbodir = "/software/kemi/TURBOMOLE-7.6"
+
 [dependencies]
-setup = "module load turbomole"
+setup = """
+export TURBODIR=/software/kemi/TURBOMOLE-7.6
+source /software/kemi/TURBOMOLE-7.6/Config_turbo_env"""

@@ -1,2 +1,2 @@
 [paths]
-xtb_exec = "xtb"
+xtb_exec = "/software/kemi/xtb/6.7.1/bin/xtb"

@@ -1,5 +1,2 @@
 [paths]
-molpro_exec = "molpro"
-
-[dependencies]
-setup = "module load molpro"
+molpro_exec = "/software/kemi/molpro/2021/bin/molpro"

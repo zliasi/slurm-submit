@@ -1,2 +1,5 @@
 #!/usr/bin/env bash
-TURBOMOLE_DEPS='module load turbomole'
+TURBODIR="/software/kemi/TURBOMOLE-7.6"
+
+TURBOMOLE_DEPS="export TURBODIR=${TURBODIR}
+source ${TURBODIR}/Config_turbo_env"

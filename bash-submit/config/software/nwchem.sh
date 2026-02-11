@@ -1,4 +1,2 @@
 #!/usr/bin/env bash
-NWCHEM_EXEC="nwchem"
-
-NWCHEM_DEPS='module load nwchem'
+NWCHEM_EXEC="/software/kemi/NWChem/Nwchem/nwchem-6.6/bin/LINUX64/nwchem"

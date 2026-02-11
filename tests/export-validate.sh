@@ -335,19 +335,19 @@ run_mode() {
     local variant_toml variant_sh
     if [[ "${mode}" == "python" ]]; then
       variant_toml="${PROJECT_ROOT}/python-submit/config/software/orca-test.toml"
-      printf '[paths]\norca_path = "/tmp/orca-test"\n' > "${variant_toml}"
+      printf '[paths]\norca_path = "/software/kemi/Orca/orca_6_0_1"\n' > "${variant_toml}"
       cp "${INPUT_DIR}/orca/hf-h2.inp" "${work_dir}/variant-test.inp"
       (cd "${work_dir}" && sorca variant-test.inp --variant test --export "${out_dir}/variant.slurm") 2>&1 || true
       rm -f "${variant_toml}"
     else
       variant_sh="${PROJECT_ROOT}/bash-submit/config/software/orca-test.sh"
-      printf 'ORCA_PATH="/tmp/orca-test"\n' > "${variant_sh}"
+      printf 'ORCA_PATH="/software/kemi/Orca/orca_6_0_1"\n' > "${variant_sh}"
       cp "${INPUT_DIR}/orca/hf-h2.inp" "${work_dir}/variant-test.inp"
       (cd "${work_dir}" && sorca variant-test.inp --variant test --export "${out_dir}/variant.slurm") 2>&1 || true
       rm -f "${variant_sh}"
     fi
     if [[ -f "${out_dir}/variant.slurm" ]]; then
-      assert_contains "variant paths" "${out_dir}/variant.slurm" "/tmp/orca-test"
+      assert_contains "variant paths" "${out_dir}/variant.slurm" "/software/kemi/Orca/orca_6_0_1"
       log_pass "variant config loaded"
     else
       log_fail "variant export" "file not created"

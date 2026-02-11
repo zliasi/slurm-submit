@@ -1,5 +1,2 @@
 [paths]
-nwchem_exec = "nwchem"
-
-[dependencies]
-setup = "module load nwchem"
+nwchem_exec = "/software/kemi/NWChem/Nwchem/nwchem-6.6/bin/LINUX64/nwchem"
