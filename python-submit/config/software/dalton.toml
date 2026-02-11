@@ -1,0 +1,9 @@
+[paths]
+dalton_exec_32i = "/software/kemi/DALTON2020/dalton/build-intel-20.0.4-par/dalton"
+dalton_exec_64i = "/software/kemi/DALTON2020/dalton/build-64-intel-20.0.4-par/dalton"
+
+[dependencies]
+setup = """
+export MKL_BLACS_MPI=INTELMPI
+module load intel/20.0.4
+module load intelmpi/2020.4.304"""

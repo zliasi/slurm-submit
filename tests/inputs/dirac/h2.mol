@@ -1,0 +1,9 @@
+INTGRL
+H2 molecule minimal
+STO-3G basis
+C   1    0         A
+        1.    2
+H1    0.000000    0.000000    0.000000
+H2    0.000000    0.000000    0.740000
+LARGE BASIS STO-3G
+FINISH

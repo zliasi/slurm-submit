@@ -1,0 +1,167 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Unified SLURM job submission entry point
+#
+# Usage:
+#   submit <module> [input...] [options]
+#   s<module> [input...] [options]    (via symlink)
+#
+# Resolves module from invocation name or first argument,
+# sources library + module, parses args, generates sbatch, submits.
+
+SUBMIT_ROOT="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)"
+readonly SUBMIT_ROOT
+
+# Resolve which module to use from invocation name or first arg
+#
+# Sets MODULE_NAME and adjusts $@ if module came from first arg.
+# If invoked as "submit", first positional arg is the module name.
+# If invoked as "s<name>" (symlink), module is <name>.
+#
+# Arguments:
+#   $@ - Original command line arguments
+#
+# Sets globals:
+#   MODULE_NAME, PROGRAM_INVOCATION
+#
+# Outputs:
+#   Remaining args after module name extraction
+#
+# Returns:
+#   0 - Success
+#   1 - No module specified (exits)
+resolve_module() {
+  local invocation
+  invocation=$(basename "$0")
+  PROGRAM_INVOCATION="${invocation}"
+
+  if [[ "${invocation}" == "submit" ]]; then
+    [[ $# -ge 1 ]] || {
+      printf "Usage: submit <module> [input...] [options]\n" >&2
+      printf "       s<module> [input...] [options]\n" >&2
+      exit 1
+    }
+    MODULE_NAME="$1"
+    shift
+  else
+    MODULE_NAME="${invocation#s}"
+  fi
+
+  local module_file="${SUBMIT_ROOT}/modules/${MODULE_NAME}.sh"
+  [[ -f "${module_file}" ]] \
+    || die "Unknown module: ${MODULE_NAME}"
+
+  SUBMIT_ARGS=("$@")
+}
+
+# Source all library files
+#
+# Returns:
+#   0 - Success
+source_libraries() {
+  local lib_file
+  for lib_file in \
+    "${SUBMIT_ROOT}/lib/core.sh" \
+    "${SUBMIT_ROOT}/lib/config.sh" \
+    "${SUBMIT_ROOT}/lib/args.sh" \
+    "${SUBMIT_ROOT}/lib/backup.sh" \
+    "${SUBMIT_ROOT}/lib/manifest.sh" \
+    "${SUBMIT_ROOT}/lib/partition.sh" \
+    "${SUBMIT_ROOT}/lib/scratch.sh" \
+    "${SUBMIT_ROOT}/lib/sbatch.sh"; do
+    # shellcheck source=/dev/null
+    source "${lib_file}"
+  done
+}
+
+# Print full usage: common options + module-specific help
+#
+# Returns:
+#   0 - Success
+print_usage() {
+  printf "Usage: %s [input...] [options]\n\n" "${PROGRAM_INVOCATION}"
+  if declare -f mod_print_usage >/dev/null 2>&1; then
+    mod_print_usage
+    printf "\n"
+  fi
+  print_common_options
+}
+
+# Main entry point
+#
+# Arguments:
+#   $@ - Command line arguments
+#
+# Returns:
+#   0 - Success
+#   1 - Error
+main() {
+  source_libraries
+
+  # Load shipped defaults
+  # shellcheck source=/dev/null
+  source "${SUBMIT_ROOT}/config/defaults.sh"
+
+  resolve_module "$@"
+
+  # Source module
+  # shellcheck source=/dev/null
+  source "${SUBMIT_ROOT}/modules/${MODULE_NAME}.sh"
+
+  # Apply module defaults over shipped defaults
+  apply_module_defaults
+
+  # Initialize runtime globals from final defaults
+  init_runtime_globals
+
+  # Parse common args
+  parse_common_args "${SUBMIT_ARGS[@]}"
+
+  # Resolve --export sentinel to default filename
+  if [[ "${EXPORT_FILE}" == ":default:" ]]; then
+    EXPORT_FILE="${MODULE_NAME}.slurm"
+  fi
+
+  # Load per-software config (after args so VARIANT is available)
+  load_software_config
+
+  # Validate common args
+  validate_common_args
+
+  # Normalize output dir
+  OUTPUT_DIR=$(normalize_output_dir "${OUTPUT_DIR}")
+
+  # Module-specific arg parsing
+  mod_parse_args "${REMAINING_ARGS[@]}"
+
+  # Module-specific validation
+  mod_validate
+
+  # Partition setup
+  setup_partition_specifics
+
+  # Resolve inputs
+  if declare -f mod_build_jobs >/dev/null 2>&1; then
+    mod_build_jobs "${POSITIONAL_ARGS[@]}"
+  else
+    resolve_inputs
+  fi
+
+  # Ensure output directory exists
+  ensure_directory "${OUTPUT_DIR}"
+
+  # Determine job name
+  determine_job_name
+
+  # Handle manifest
+  setup_manifest
+
+  # Backup existing outputs
+  backup_all_outputs
+
+  # Generate and submit
+  submit_job
+}
+
+main "$@"

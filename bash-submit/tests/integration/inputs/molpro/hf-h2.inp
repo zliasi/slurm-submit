@@ -1,0 +1,8 @@
+***,H2 HF/STO-3G single point
+memory,10,m
+basis=sto-3g
+geometry={
+  H1
+  H2,H1,0.74
+}
+hf

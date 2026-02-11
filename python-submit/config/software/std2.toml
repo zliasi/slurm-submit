@@ -1,0 +1,10 @@
+[paths]
+std2_exec = "std2"
+xtb4stda_exec = "xtb4stda"
+std2_default_ax = "0.25"
+std2_default_e = "7.0"
+
+[dependencies]
+setup = """
+export OMP_STACKSIZE=4G
+ulimit -s unlimited"""

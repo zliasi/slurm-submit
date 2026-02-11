@@ -1,0 +1,12 @@
+[paths]
+orca_path = "/groups/kemi/liasi/local/orca/latest"
+openmpi_bin = "/groups/kemi/liasi/local/orca/latest/openmpi/bin"
+openmpi_lib = "/groups/kemi/liasi/local/orca/latest/openmpi/lib"
+
+[dependencies]
+setup = """
+module purge
+export PATH=/groups/kemi/liasi/local/orca/latest:/groups/kemi/liasi/local/orca/latest/openmpi/bin:$PATH
+export LD_LIBRARY_PATH=/groups/kemi/liasi/local/orca/latest/openmpi/lib:$LD_LIBRARY_PATH
+export OMP_NUM_THREADS=1
+export OMPI_MCA_rmaps_base_oversubscribe=1"""

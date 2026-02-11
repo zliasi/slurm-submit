@@ -1,0 +1,13 @@
+$title
+H2 ridft test
+$symmetry c1
+$coord file=coord
+$atoms
+h  1-2                                                                         \
+   basis =h def-SV(P)
+$basis
+$closed shells
+ a       1                                    ( 2 )
+$scfmo none
+$scfiterlimit 30
+$end

@@ -1,0 +1,8 @@
+[paths]
+gaussian_exec = "/software/kemi/g16/g16"
+
+[dependencies]
+setup = """
+export MKL_BLACS_MPI=INTELMPI
+module load intel/20.0.4
+module load intelmpi/2020.4.304"""

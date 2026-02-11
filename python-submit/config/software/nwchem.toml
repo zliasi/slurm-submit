@@ -1,0 +1,5 @@
+[paths]
+nwchem_exec = "nwchem"
+
+[dependencies]
+setup = "module load nwchem"

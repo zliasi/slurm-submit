@@ -1,0 +1,43 @@
+[project]
+name = "slurm-submit"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+submit = "slurm_submit.cli:main"
+sorca = "slurm_submit.cli:main"
+sgaussian = "slurm_submit.cli:main"
+sdalton = "slurm_submit.cli:main"
+sdirac = "slurm_submit.cli:main"
+sturbomole = "slurm_submit.cli:main"
+scfour = "slurm_submit.cli:main"
+smolpro = "slurm_submit.cli:main"
+snwchem = "slurm_submit.cli:main"
+ssharc = "slurm_submit.cli:main"
+sxtb = "slurm_submit.cli:main"
+sstd2 = "slurm_submit.cli:main"
+spython = "slurm_submit.cli:main"
+sexec = "slurm_submit.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/slurm_submit"]
+
+[tool.hatch.build.targets.wheel.shared-data]
+"config" = "slurm_submit/config"
+
+[tool.mypy]
+strict = true
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+
+[dependency-groups]
+dev = ["pytest>=8", "mypy>=1.8", "ruff>=0.3", "black>=24", "pylint>=3"]

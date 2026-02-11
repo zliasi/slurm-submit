@@ -1,0 +1,8 @@
+[paths]
+dirac_pam = "/lustre/hpc/software/kemi/DIRAC-21.0/build-intelmpi-2020.4.304-i8/pam"
+
+[dependencies]
+setup = """
+export MKL_BLACS_MPI=INTELMPI
+module load intel/20.0.4
+module load intelmpi/2020.4.304"""

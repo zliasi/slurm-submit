@@ -1,0 +1,10 @@
+start h2_hf
+title "H2 HF/STO-3G"
+geometry units angstrom
+  H  0.000  0.000  0.000
+  H  0.000  0.000  0.740
+end
+basis
+  H library STO-3G
+end
+task scf

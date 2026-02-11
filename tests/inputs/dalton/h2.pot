@@ -1,0 +1,7 @@
+@DIFFUSE
+ORDER 0 0
+
+1
+! site        x          y          z        Q0
+1  AA  2.5000  0.0000  0.0000   -0.6690
+@END

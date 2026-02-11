@@ -1,0 +1,5 @@
+[paths]
+molpro_exec = "molpro"
+
+[dependencies]
+setup = "module load molpro"

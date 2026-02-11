@@ -1,0 +1,28 @@
+[partition]
+default = "chem"
+
+[resources]
+cpus = 1
+memory_gb = 2
+ntasks = 1
+nodes = 1
+throttle = 5
+
+[output]
+directory = "output"
+log_extension = ".log"
+
+[backup]
+use_backup_dir = true
+max_backups = 5
+dir_name = "backup"
+
+[scratch]
+base = "/scratch"
+
+[node_exclude]
+file = "/groups/kemi/liasi/lib/chem_node_exclude_list.txt"
+partition = "chem"
+
+[archive]
+create = true

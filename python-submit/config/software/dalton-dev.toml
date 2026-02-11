@@ -1,0 +1,9 @@
+[paths]
+dalton_exec_32i = "/groups/kemi/liasi/local/dalton/dev/build-32i/dalton"
+dalton_exec_64i = "/groups/kemi/liasi/local/dalton/dev/build-64i/dalton"
+
+[dependencies]
+setup = """
+export MKL_BLACS_MPI=INTELMPI
+module load intel/20.0.4
+module load intelmpi/2020.4.304"""

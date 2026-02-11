@@ -1,0 +1,7 @@
+$title
+H2 bad functional
+$symmetry c1
+$coord file=coord
+$dft
+  functional nonexistent-xc-functional
+$end

@@ -1,0 +1,8 @@
+[paths]
+sharc_home = "~/software/build/sharc/default"
+
+[dependencies]
+setup = """
+source /software/kemi/intel/oneapi/setvars.sh --force
+export SHARC=~/software/build/sharc/default/bin
+export PATH=$SHARC:$PATH"""

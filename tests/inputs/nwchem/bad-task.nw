@@ -1,0 +1,10 @@
+start h2_bad
+title "H2 bad task"
+geometry units angstrom
+  H  0.000  0.000  0.000
+  H  0.000  0.000  0.740
+end
+basis
+  H library STO-3G
+end
+task nonexistent_method

@@ -1,0 +1,13 @@
+printlevel 0
+
+geomfile "geom"
+veloc external
+nstates 1
+actstates 1
+state 1 mch
+coeff auto
+ezero 0.0
+tmax 1.0
+stepsize 0.5
+nsubsteps 1
+
