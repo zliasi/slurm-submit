@@ -9,7 +9,7 @@ rotation, automatic job arrays, archive creation, among other things.
 The project includes two independent implementations with identical functionality:
 
 - `bash-submit`: Pure Bash, sourceable with no dependencies beyond Bash 4+.
-- `python-submit`: Python package, installable *via* `uv`/`pip`.
+- `python-submit`: Python package, installable via `uv`/`pip`.
 
 Both share the same configuration format and module set. Pick whichever fits
 your preferences and environment the best.
@@ -97,7 +97,7 @@ $ sorca test.inp -c 4 --export job.slurm
 $ sorca test.inp -c 4 --export
 ```
 
-With no filename provided, defaults to `<module>.slurm` (*e.g.*, `orca.slurm`). Useful for quick testing.
+With no filename provided, defaults to `<module>.slurm` (e.g., `orca.slurm`). Useful for quick testing.
 
 ## Configuration
 
